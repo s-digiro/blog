@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    image: nginx:1.21
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/usr/src/blog
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - rust
+
+  rust:
+    build:
+      context: .
+      dockerfile: ./.docker/rust/Dockerfile
+    command: "cargo run"
+    expose:
+     - 8000
+    volumes:
+      - .:/usr/src/app
+      - registry:/root/.cargo/registry
+
+volumes:
+  registry:
+    driver: local
