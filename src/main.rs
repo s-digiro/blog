@@ -1,16 +1,18 @@
 #[macro_use] extern crate rocket;
 
-#[get("/")]
-fn index() -> &'static str {
-    "<span style=\"color: red;\">Hello, world!</span>"
-}
+use rocket::fs::{FileServer, relative};
+use std::path::Path;
+use rocket::fs::NamedFile;
 
-#[get("/page")]
-fn page() -> &'static str {
-    "<span style=\"color: red;\">Hello, Sean!</span>"
+#[get("/dist/bundle.js")]
+async fn bundle() -> Option<NamedFile> {
+    let path = Path::new(relative!("frontend/dist/bundle.js"));
+    NamedFile::open(path).await.ok()
 }
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index])
+    rocket::build()
+        .mount("/", rocket::routes![bundle])
+        .mount("/", FileServer::from(relative!("frontend/public")))
 }

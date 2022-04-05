@@ -13,16 +13,17 @@ services:
       - rust
 
   rust:
-    build:
-      context: .
-      dockerfile: ./.docker/rust/Dockerfile
-    command: "cargo run"
-    expose:
-     - 8000
+    build: .
+
+  db:
+    image: postgres:14.2
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
     volumes:
-      - .:/usr/src/app
-      - registry:/root/.cargo/registry
+      - db:/var/lib/postgres
 
 volumes:
   registry:
     driver: local
+  db:
